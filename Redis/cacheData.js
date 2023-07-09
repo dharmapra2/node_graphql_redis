@@ -10,23 +10,15 @@ export const connectToRedisDB = async () => {
   console.log("Redis client is ready");
 };
 
-export const cacheData = async (req, res, next) => {
-  const posts = req.params.postId;
+export const getCacheData = async (key) => {
   let results;
-  try {
-    const cacheResults = await redisClient.get(posts);
-    if (cacheResults) {
-      results = JSON.parse(cacheResults);
-      res.send({
-        fromCache: true,
-        data: results,
-      });
-    } else {
-      next();
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(404);
+  const cacheResults = await redisClient.get(key);
+  if (cacheResults) {
+    results = JSON.parse(cacheResults);
+    return {
+      fromCache: true,
+      data: results,
+    };
   }
 };
 

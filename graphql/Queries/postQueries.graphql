@@ -1,6 +1,8 @@
 type Query {
-  allPosts: Response
-  getSinglePost(postId: Int!): Response
+  getAllPosts: getPosts
+  getSinglePost(postId: Int!): getPosts
+  getAllComments: getComments
+  getCommentsByPostId(postId: Int!): getComments
 }
 type post {
   userId: ID
@@ -8,8 +10,22 @@ type post {
   title: String
   body: String
 }
-type Response {
+type comments {
+  postId: ID
+  id: ID
+  name: String
+  email: String
+  body: String
+}
+type getPosts {
+  status: Boolean
   fromCache: Boolean
   message: String
   data: [post]
+}
+type getComments {
+  status: Boolean
+  fromCache: Boolean
+  message: String
+  data: [comments]
 }

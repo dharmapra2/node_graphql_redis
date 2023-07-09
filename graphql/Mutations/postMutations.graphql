@@ -1,0 +1,21 @@
+type Mutation {
+  createPost(input: PostInput): postResponse
+}
+
+input PostInput {
+  title: String
+  body: String
+  userId: ID
+}
+type post {
+  userId: ID
+  id: ID
+  title: String
+  body: String
+}
+type postResponse {
+  status: Boolean
+  fromCache: Boolean
+  message: String
+  data: post
+}
