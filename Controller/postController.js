@@ -20,14 +20,32 @@ async function postApiData(url, body) {
 }
 export const getpostsData = async (_parent, { postId }, context, info) => {
   let results;
-
+  const allcachedData = await redisClient.get(`posts`);
+  const res = JSON.parse(allcachedData);
+  if (res) {
+    let temp = res.find((data) => data.id == postId);
+    return {
+      fromCache: true,
+      data: [temp],
+      message: "Data fetched successfully",
+    };
+  }
+  const cachedData = await redisClient.get(`post:${postId}`);
+  if (cachedData) {
+    const data = JSON.parse(cachedData);
+    return {
+      fromCache: true,
+      data: [data],
+      message: "Data fetched successfully",
+    };
+  }
   try {
     results = await fetchApiData(`posts/${postId}`);
     if (results.length === 0) {
       throw "API returned an empty array";
     }
-    // await setRedisData(posts, results);
-    console.log(results);
+    await setRedisData(`post:${postId}`, results);
+
     return {
       fromCache: false,
       data: [results],
@@ -44,11 +62,11 @@ export const getpostsData = async (_parent, { postId }, context, info) => {
 export const getAllPostsData = async (_parent, {}, context, info) => {
   let results;
 
-  const cachedUser = await redisClient.get(`post`);
-  if (cachedUser) {
-    const data = JSON.parse(cachedUser);
+  const cachedData = await redisClient.get(`posts`);
+  if (cachedData) {
+    const data = JSON.parse(cachedData);
     return {
-      fromCache: false,
+      fromCache: true,
       data: data,
       message: "Data fetched successfully",
     };
@@ -58,9 +76,9 @@ export const getAllPostsData = async (_parent, {}, context, info) => {
       if (results.length === 0) {
         throw "API returned an empty array";
       }
-      // await setRedisData(posts, results);
+      await setRedisData("posts", results);
       // Store the user in Redis cache
-      await redisClient.set(`post`, JSON.stringify(results));
+      // await redisClient.set(`post`, JSON.stringify(results));
 
       return {
         fromCache: false,
