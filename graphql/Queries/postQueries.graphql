@@ -1,0 +1,15 @@
+type Query {
+  allPosts: Response
+  getSinglePost(postId: Int!): Response
+}
+type post {
+  userId: ID
+  id: ID
+  title: String
+  body: String
+}
+type Response {
+  fromCache: Boolean
+  message: String
+  data: [post]
+}

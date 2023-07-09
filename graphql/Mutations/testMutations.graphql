@@ -1,0 +1,11 @@
+type Mutation {
+  createCourse(input: CourseInput): Course
+}
+
+input CourseInput {
+  title: String
+  author: String
+  description: String
+  topic: String
+  url: String
+}
